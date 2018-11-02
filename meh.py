@@ -2,8 +2,9 @@ import svr_lib as svr
 import tensorflow as tf
 import numpy as np
 import pandas as pd
-import random
-import matplotlib.pyplot as plt
+import sched
+import time
+from datetime import datetime
 
 '''
 Steps:
@@ -25,11 +26,19 @@ Columns:
 
 '''
 
-data = svr.getMatchesFormatted('Aelgoo_45c')
+s = sched.scheduler(time.time, time.sleep)
 
-for match in data:
-	name, ID = match
+def updateAllData():
+	print ('Updating at time:\n'.format(datetime.now().time()))
+	for algo in svr.getLeaderBoardAlgos([1,2,3,4,5]):
+		data = svr.getMatchesFormatted(algo)
 
-	df = pd.DataFrame.from_dict(data[match], orient='index', columns=list(range(421))+['p1Health','p1Cores','p1Bits','p2Health','p2Cores','p2Bits'])
+		for match in data:
+			name, ID = match
 
-	df.to_pickle('{}_{}.pkl'.format(name, ID))
+			df = pd.DataFrame.from_dict(data[match], orient='index', columns=list(range(421))+['p1Health','p1Cores','p1Bits','p2Health','p2Cores','p2Bits'])
+
+			df.to_pickle('{}_{}.pkl'.format(name, ID))
+
+s.enter(3600, 1, updateAllData)
+s.run()

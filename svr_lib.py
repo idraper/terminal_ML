@@ -60,6 +60,29 @@ def getID(algoName, r=100):
 			break
 	return -1
 
+def getLeaderBoardAlgos(pages=[1], limit=1900):
+	algos = {}
+	for i in pages:
+		try:
+			# print ('checking page {}'.format(i))
+			page = requests.get('http://terminal.c1games.com/api/game/leaderboard?page={}'.format(i))
+			contents = str(page.content)[2:-1].replace("\\'",'').replace('\\\\','\\').replace('\\"','')
+			data = json.loads(contents)
+
+			for algo in data['algos']:
+				name = algo['name']
+				ID = algo['id']
+				elo = algo['elo']
+
+				if elo > limit:
+					algos[name] = ID
+				else:
+					break
+		except Exception as e:
+			print (e)
+	return algos
+
+
 def getMatchIDs(algo):
 	if type(algo) == str:
 		ID = getID(algo)
