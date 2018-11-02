@@ -2,7 +2,6 @@ import svr_lib as svr
 import tensorflow as tf
 import numpy as np
 import pandas as pd
-import sched
 import time
 from datetime import datetime
 
@@ -26,10 +25,9 @@ Columns:
 
 '''
 
-s = sched.scheduler(time.time, time.sleep)
-
 def updateAllData():
-	print ('Updating at time:\n'.format(datetime.now().time()))
+	print ('Updating at time:\t{}'.format(datetime.now().time()))
+
 	for algo in svr.getLeaderBoardAlgos([1,2,3,4,5]):
 		data = svr.getMatchesFormatted(algo)
 
@@ -40,5 +38,13 @@ def updateAllData():
 
 			df.to_pickle('data/{}_{}.pkl'.format(name, ID))
 
-s.enter(3600, 1, updateAllData)
-s.run()
+
+while True:
+	try:
+		updateAllData()
+		time.sleep(3600) # 1 hour
+	except KeyboardInterrupt:
+		print ('Exiting program')
+		break
+	except:
+		time.sleep(600) # 10 min
