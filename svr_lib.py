@@ -175,6 +175,10 @@ def getFormattedUnitData(mID):
 		filters = []
 		destructors = []
 		encryptors = []
+		pings = []
+		emps = []
+		scramblers = []
+		removes = []
 
 		for i, vals in enumerate(info['p1Units'][:3]):
 			if i == 0:
@@ -183,6 +187,14 @@ def getFormattedUnitData(mID):
 				destructors += [(u[0], u[1]) for u in vals]
 			if i == 2:
 				encryptors += [(u[0], u[1]) for u in vals]
+			if i == 3:
+				pings += [(u[0], u[1]) for u in vals]
+			if i == 4:
+				emps += [(u[0], u[1]) for u in vals]
+			if i == 5:
+				scramblers += [(u[0], u[1]) for u in vals]
+			if i == 6:
+				removes += [(u[0], u[1]) for u in vals]
 
 		for i, vals in enumerate(info['p2Units'][:3]):
 			if i == 0:
@@ -191,6 +203,14 @@ def getFormattedUnitData(mID):
 				destructors += [(u[0], u[1]) for u in vals]
 			if i == 2:
 				encryptors += [(u[0], u[1]) for u in vals]
+			if i == 3:
+				pings += [(u[0], u[1]) for u in vals]
+			if i == 4:
+				emps += [(u[0], u[1]) for u in vals]
+			if i == 5:
+				scramblers += [(u[0], u[1]) for u in vals]
+			if i == 6:
+				removes += [(u[0], u[1]) for u in vals]
 
 
 		mapData = np.zeros(cols)
@@ -201,6 +221,14 @@ def getFormattedUnitData(mID):
 			mapData[pointIndex(pos)] = 2
 		for pos in encryptors:
 			mapData[pointIndex(pos)] = 3
+		for pos in pings:
+			mapData[pointIndex(pos)] = 4
+		for pos in emps:
+			mapData[pointIndex(pos)] = 5
+		for pos in scramblers:
+			mapData[pointIndex(pos)] = 6
+		for pos in removes:
+			mapData[pointIndex(pos)] = 7
 
 		mapData[421 + 0] = info['p1Stats'][0]
 		mapData[421 + 1] = info['p1Stats'][1]

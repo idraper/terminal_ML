@@ -1,12 +1,61 @@
 import tensorflow as tf
+from tensorflow import keras
 import numpy as np
 import random
+import pickle as pk
+import pandas as pd
+import os
 
 # cmd: > tensorboard --logdir=$PATH
 
-learning_rate = 0.0005
-training_epoch = 100000
-display_step = 100
+path = './data/'
+ 
+files = os.listdir(path)
+for name in files:
+	with open(path+name, 'rb') as file:
+
+		df = pk.load(file)
+
+	break;
+
+features = list(range(421))+['p1Health','p1Cores','p1Bits','p2Health','p2Cores','p2Bits']
+
+training_df = {}
+
+df = df.to_dict('list')
+
+train_data = []
+train_lbls = []
+
+for key, val in df.items():
+	train_data.append([val[i] for i in range(len(val)-1)])
+	train_lbls.append([val[i+1] for i in range(len(val)-1)])
+
+
+# for i, k in enumerate(list(range(421))+['p1Health','p1Cores','p1Bits','p2Health','p2Cores','p2Bits']):
+# 	df
+
+
+
+'''
+model = keras.Sequential([
+	keras.layers.Flatten(input_shape=421+6),
+	keras.layers.Dense(128, activation=tf.nn.relu),
+	keras.layers.Dense(128, activation=tf.nn.relu),
+	keras.layers.Dense(210, activation=tf.nn.softmax)
+])
+
+model.compile(optimizer=tf.train.AdamOptimizer(), 
+			  loss='sparse_categorical_crossentropy',
+			  metrics=['accuracy'])
+
+model.fit(train_data, train_labels, epochs=5)
+'''
+
+'''
+learning_rate = 0.05
+training_epoch = 1000
+display_step = 10
 batch_size = 100
 ninputs = 1
 nhidden = 15
@@ -41,7 +90,7 @@ merged = tf.summary.merge_all()
 
 sess = tf.Session()
 
-writer = tf.summary.FileWriter('./', sess.graph)
+writer = tf.summary.FileWriter('./ML_summaries', sess.graph)
 
 sess.run(tf.global_variables_initializer())
 for epoch in range(training_epoch):
@@ -59,3 +108,5 @@ for epoch in range(training_epoch):
 
 writer.close()
 sess.close()
+
+'''

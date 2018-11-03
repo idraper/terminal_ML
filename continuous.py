@@ -37,6 +37,14 @@ def updateAllData():
 			df = pd.DataFrame.from_dict(data[match], orient='index', columns=list(range(421))+['p1Health','p1Cores','p1Bits','p2Health','p2Cores','p2Bits'])
 
 			df.to_pickle('data/{}_{}.pkl'.format(name, ID))
-		break
 
-# updateAllData()
+
+while True:
+	try:
+		updateAllData()
+		time.sleep(3600) # 1 hour
+	except KeyboardInterrupt:
+		print ('Exiting program')
+		break
+	except:
+		time.sleep(600) # 10 min
