@@ -1,112 +1,65 @@
-import tensorflow as tf
+from sklearn.preprocessing import normalize
 from tensorflow import keras
-import numpy as np
-import random
+import tensorflow as tf
 import pickle as pk
 import pandas as pd
+import numpy as np
+import codecs
+import json
 import os
 
 # cmd: > tensorboard --logdir=$PATH
 
 path = './data/'
- 
-files = os.listdir(path)
-for name in files:
-	with open(path+name, 'rb') as file:
-
-		df = pk.load(file)
-
-	break;
-
-features = list(range(421))+['p1Health','p1Cores','p1Bits','p2Health','p2Cores','p2Bits']
-
-training_df = {}
-
-df = df.to_dict('list')
 
 train_data = []
 train_lbls = []
 
-for key, val in df.items():
-	train_data.append([val[i] for i in range(len(val)-1)])
-	train_lbls.append([val[i+1] for i in range(len(val)-1)])
+files = os.listdir(path)
+for n, name in enumerate(files):
+	with open(path+name, 'rb') as file:
+		df = pk.load(file)
 
+	data = df.values
+	for i in range(len(data) - 1):
+		train_data.append(data[i])
+		train_lbls.append(data[i+1])
 
-# for i, k in enumerate(list(range(421))+['p1Health','p1Cores','p1Bits','p2Health','p2Cores','p2Bits']):
-# 	df
+train_data = np.array([np.array(xi) for xi in train_data])
+train_lbls = np.array([np.array(xi) for xi in train_lbls])
 
+train_data = normalize(train_data)
+train_lbls = normalize(train_lbls)
 
+print (train_data.shape)
+print (train_lbls.shape)
 
-'''
 model = keras.Sequential([
-	keras.layers.Flatten(input_shape=421+6),
-	keras.layers.Dense(128, activation=tf.nn.relu),
-	keras.layers.Dense(128, activation=tf.nn.relu),
-	keras.layers.Dense(210, activation=tf.nn.softmax)
+	keras.layers.Dense(500, input_shape=(train_data.shape[1],)),
+	keras.layers.BatchNormalization(),
+	keras.layers.Dense(500, activation=tf.nn.relu),
+	keras.layers.BatchNormalization(),
+	keras.layers.Dense(train_data.shape[1], activation=tf.nn.softmax),
+	keras.layers.BatchNormalization()
 ])
 
-model.compile(optimizer=tf.train.AdamOptimizer(), 
-			  loss='sparse_categorical_crossentropy',
-			  metrics=['accuracy'])
+model.compile(optimizer=keras.optimizers.SGD(lr=1), 
+			  loss='mse',
+			  metrics=['accuracy', 'mae'])
 
-model.fit(train_data, train_labels, epochs=5)
-'''
+tb = keras.callbacks.TensorBoard(log_dir='./ML_summaries/', histogram_freq= 0, write_graph=True, write_images=True)
 
-'''
-learning_rate = 0.05
-training_epoch = 1000
-display_step = 10
-batch_size = 100
-ninputs = 1
-nhidden = 15
-noutputs = 1
+save = keras.callbacks.ModelCheckpoint('model.hdf5', monitor='val_loss', verbose=0, save_best_only=False, save_weights_only=False, mode='auto', period=1)
 
-# W * x + b
-with tf.name_scope('input'):
-	x = tf.placeholder(name='x', dtype='float32', shape=[None,ninputs])
-	
-with tf.name_scope('variables'):
-	W1 = tf.Variable(tf.random_normal([ninputs,nhidden]), name='Weight1', dtype='float32')
-	W2 = tf.Variable(tf.random_normal([nhidden,noutputs]), name='Weight2', dtype='float32')
-	b1 = tf.Variable(tf.zeros([nhidden]), name='Bias1', dtype='float32')
-	b2 = tf.Variable(tf.zeros([noutputs]), name='Bias2', dtype='float32')
+stop = keras.callbacks.EarlyStopping(monitor='acc', min_delta=0.0001)
 
-#output = W * x + b
-hidden_out = tf.nn.relu(tf.add(tf.matmul(x, W1), b1))
-#output = tf.add(tf.matmul(x, W1), b1)
-output = tf.add(tf.matmul(hidden_out, W2), b2)
-#output = tf.add(tf.matmul(x, W1), b1)
+lr = keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.1, patience=10, verbose=0, mode='auto', min_delta=0.0001, cooldown=0, min_lr=0)
 
-error = tf.subtract(tf.sin(x), output)
-mse = tf.reduce_mean(tf.square(error))
+cb_list = [tb, save, lr]
 
-optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(mse)
+model.fit(train_data, train_lbls, epochs=10, callbacks=cb_list)
 
-c = 0
-# summaries for tensorboard
-tf.summary.scalar("error", mse)
+# print (model.get_layer(index=0).get_weights()[1])
 
-merged = tf.summary.merge_all()
-
-sess = tf.Session()
-
-writer = tf.summary.FileWriter('./ML_summaries', sess.graph)
-
-sess.run(tf.global_variables_initializer())
-for epoch in range(training_epoch):
-	#avg_cost = 0.
-	
-	dict = {x : [[random.uniform(0,1) for x in range(ninputs)]]}
-	summary, _, c = sess.run([merged, optimizer, mse], feed_dict=dict)
-	
-	if (epoch + 1) % display_step == 0:
-		writer.add_summary(summary, epoch)
-		print ("Epoch:", '%04d' % (epoch+1), "cost=", "{:.9f}".format(c))
-		#print (sess.run(W1, feed_dict=dict))
-		#print (sess.run(W2, feed_dict=dict))
-		#print ()
-
-writer.close()
-sess.close()
-
-'''
+# file_path = "model"
+# json.dump(model.get_layer(index=0).get_weights()[0].tolist(), codecs.open(file_path, 'w', encoding='utf-8'), separators=(',', ':'), sort_keys=True, indent=4)

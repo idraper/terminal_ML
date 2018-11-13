@@ -30,7 +30,7 @@ def updateAllData():
 
 	for algo in svr.getLeaderBoardAlgos([1,2,3,4,5]):
 		data = svr.getMatchesFormatted(algo)
-
+		print (data)
 		for match in data:
 			name, ID = match
 

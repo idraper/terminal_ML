@@ -38,13 +38,17 @@ def updateAllData():
 
 			df.to_pickle('data/{}_{}.pkl'.format(name, ID))
 
+		break;
 
-while True:
-	try:
-		updateAllData()
-		time.sleep(3600) # 1 hour
-	except KeyboardInterrupt:
-		print ('Exiting program')
-		break
-	except:
-		time.sleep(600) # 10 min
+
+
+updateAllData()
+# while True:
+# 	try:
+# 		updateAllData()
+# 		time.sleep(3600) # 1 hour
+# 	except KeyboardInterrupt:
+# 		print ('Exiting program')
+# 		break
+# 	except:
+# 		time.sleep(600) # 10 min
