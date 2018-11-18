@@ -1,5 +1,4 @@
 import svr_lib as svr
-import tensorflow as tf
 import numpy as np
 import pandas as pd
 import time
@@ -42,13 +41,13 @@ def updateAllData():
 
 
 
-updateAllData()
-# while True:
-# 	try:
-# 		updateAllData()
-# 		time.sleep(3600) # 1 hour
-# 	except KeyboardInterrupt:
-# 		print ('Exiting program')
-# 		break
-# 	except:
-# 		time.sleep(600) # 10 min
+#updateAllData()
+while True:
+	try:
+		updateAllData()
+		time.sleep(3600) # 1 hour
+	except KeyboardInterrupt:
+		print ('Exiting program')
+		break
+	except:
+		time.sleep(600) # 10 min

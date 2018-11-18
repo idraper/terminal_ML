@@ -32,6 +32,8 @@ tmp = []
 
 files = os.listdir(path)
 for n, name in enumerate(files):
+	print ('{}\t\t{}'.format(n, name))
+	
 	with open(path+name, 'rb') as file:
 		df = pk.load(file)
 
@@ -92,14 +94,14 @@ tb = keras.callbacks.TensorBoard(log_dir='./ML_summaries/', histogram_freq= 0, w
 
 save = keras.callbacks.ModelCheckpoint('model.hdf5', monitor='val_loss', verbose=0, save_best_only=False, save_weights_only=False, mode='auto', period=1)
 
-stop = keras.callbacks.EarlyStopping(monitor='acc', min_delta=0, patience=2)
+stop = keras.callbacks.EarlyStopping(monitor='acc', min_delta=0, patience=3)
 
 lr = keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.2, patience=10)
 
 cb_list = [tb, lr, stop]
 
-model.fit(train_data, train_lbls, epochs=100, callbacks=cb_list)
-save_model(model, 'KeKroepes_3.27_0.1')
+model.fit(train_data, train_lbls, epochs=200, callbacks=cb_list)
+save_model(model, 'main_v0.0')
 
 dim_x = len(model.get_layer(index=0).get_weights()[0])
 dim_y = len(model.get_layer(index=0).get_weights()[0][0])
