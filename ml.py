@@ -13,10 +13,10 @@ import os
 # cmd: > tensorboard --logdir=$PATH
 
 # save the current model
-def save_model(model):
+def save_model(model, name='model'):
 	keras.models.save_model(
 		model,
-		'{}/save/model.hdf5'.format(os.path.dirname(os.path.abspath(__file__)).replace('\\','/')),
+		'{}/save/{}.hdf5'.format(os.path.dirname(os.path.abspath(__file__)).replace('\\','/'), name),
 		overwrite=False,
 		include_optimizer=True
 	)
@@ -92,8 +92,8 @@ lr = keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.2, patience=10)
 
 cb_list = [tb, lr]
 
-model.fit(train_data, train_lbls, epochs=5, callbacks=cb_list)
-save_model(model)
+model.fit(train_data, train_lbls, epochs=500, callbacks=cb_list)
+save_model(model, 'KeKroepes_3.27')
 
 dim_x = len(model.get_layer(index=0).get_weights()[0])
 dim_y = len(model.get_layer(index=0).get_weights()[0][0])
