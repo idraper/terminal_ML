@@ -100,8 +100,8 @@ lr = keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.2, patience=10)
 
 cb_list = [tb, lr, stop]
 
-model.fit(train_data, train_lbls, epochs=100, callbacks=cb_list)
-save_model(model, 'main_v0.0')
+model.fit(train_data, train_lbls, epochs=200, callbacks=cb_list)
+save_model(model, 'main_v0.1')
 
 dim_x = len(model.get_layer(index=0).get_weights()[0])
 dim_y = len(model.get_layer(index=0).get_weights()[0][0])
@@ -141,7 +141,7 @@ def forward_prop(input, indicies, weights, biases):
 	o = my_numpy.add_vecs(my_numpy.mult_vec(weights[0],x), biases[0])
 	for i,_ in enumerate(indicies[1:]):
 		o = my_numpy.add_vecs(my_numpy.mult_vec(weights[i+1],o), biases[i+1])
-	o = my_numpy.sigmoid(o)
+		o = my_numpy.sigmoid(o)
 	return o
 
 
