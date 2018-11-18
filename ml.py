@@ -16,7 +16,7 @@ import os
 def save_model(model, name='model'):
 	keras.models.save_model(
 		model,
-		'{}/save/{}.hdf5'.format(os.path.dirname(os.path.abspath(__file__)).replace('\\','/'), name),
+		'{}/saves/{}.hdf5'.format(os.path.dirname(os.path.abspath(__file__)).replace('\\','/'), name),
 		overwrite=False,
 		include_optimizer=True
 	)
