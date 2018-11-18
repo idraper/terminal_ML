@@ -48,18 +48,18 @@ for turn in tmp:
 	for pos in turn:
 		if pos == 0:
 			t += [0,0,0]
-		if pos == 1:
+		elif pos == 1:
 			t += [1,0,0]
-		if pos == 2:
+		elif pos == 2:
 			t += [0,1,0]
-		if pos == 3:
+		elif pos == 3:
 			t += [0,0,1]
 	train_lbls.append(t)
 
 train_data = np.array([np.array(xi) for xi in train_data])
 train_lbls = np.array([np.array(xi) for xi in train_lbls])
 
-train_data = normalize(train_data)
+# train_data = normalize(train_data)
 # train_lbls = normalize(train_lbls)
 
 # at this point data is fully formatted, now to train the model
@@ -69,16 +69,16 @@ print (train_lbls.shape)
 
 model = keras.Sequential([
 	keras.layers.Dense(500, input_shape=(train_data.shape[1],)),
-	keras.layers.BatchNormalization(),
+	# keras.layers.BatchNormalization(),
 	keras.layers.Dense(600, activation=tf.nn.sigmoid),
-	keras.layers.BatchNormalization(),
+	# keras.layers.BatchNormalization(),
 	keras.layers.Dense(700, activation=tf.nn.sigmoid),
-	keras.layers.BatchNormalization(),
+	# keras.layers.BatchNormalization(),
 	keras.layers.Dense(train_lbls.shape[1], activation=tf.nn.sigmoid),
-	keras.layers.BatchNormalization(),
+	# keras.layers.BatchNormalization(),
 ])
-indicies = [0,2,4,6]
-# indicies = [0,1,2,3]
+# indicies = [0,2,4,6]
+indicies = [0,1,2,3]
 
 
 # RMSprop lr=.001
@@ -87,20 +87,20 @@ indicies = [0,2,4,6]
 # NAdam lr=.005
 
 model.compile(optimizer=keras.optimizers.RMSprop(lr=.001), 
-			  loss='mse',
+			  loss='binary_crossentropy',
 			  metrics=['accuracy'])
 
 tb = keras.callbacks.TensorBoard(log_dir='./ML_summaries/', histogram_freq= 0, write_graph=True, write_images=True)
 
 save = keras.callbacks.ModelCheckpoint('model.hdf5', monitor='val_loss', verbose=0, save_best_only=False, save_weights_only=False, mode='auto', period=1)
 
-stop = keras.callbacks.EarlyStopping(monitor='acc', min_delta=0, patience=3)
+stop = keras.callbacks.EarlyStopping(monitor='acc', min_delta=0.0001, patience=3)
 
 lr = keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.2, patience=10)
 
 cb_list = [tb, lr, stop]
 
-model.fit(train_data, train_lbls, epochs=200, callbacks=cb_list)
+model.fit(train_data, train_lbls, epochs=100, callbacks=cb_list)
 save_model(model, 'main_v0.0')
 
 dim_x = len(model.get_layer(index=0).get_weights()[0])
