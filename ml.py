@@ -75,19 +75,19 @@ for i, file in enumerate(tmp_lbls):
 		for k, pos in enumerate(row):
 			if k >= 210: break
 			k *= 3
-			if pos == 0:
+		if pos == 0:
 				train_lbls[i][j][k] = 0
 				train_lbls[i][j][k+1] = 0
 				train_lbls[i][j][k+2] = 0
-			elif pos == 1:
+		elif pos == 1:
 				train_lbls[i][j][k] = 1
 				train_lbls[i][j][k+1] = 0
 				train_lbls[i][j][k+2] = 0
-			elif pos == 2:
+		elif pos == 2:
 				train_lbls[i][j][k] = 0
 				train_lbls[i][j][k+1] = 1
 				train_lbls[i][j][k+2] = 0
-			elif pos == 3:
+		elif pos == 3:
 				train_lbls[i][j][k] = 0
 				train_lbls[i][j][k+1] = 0
 				train_lbls[i][j][k+2] = 1
@@ -131,14 +131,14 @@ tb = keras.callbacks.TensorBoard(log_dir='./ML_summaries/', histogram_freq= 0, w
 
 save = keras.callbacks.ModelCheckpoint('model.hdf5', monitor='val_loss', verbose=0, save_best_only=False, save_weights_only=False, mode='auto', period=1)
 
-stop = keras.callbacks.EarlyStopping(monitor='acc', min_delta=0.0001, patience=3)
+stop = keras.callbacks.EarlyStopping(monitor='acc', min_delta=0, patience=50)
 
 lr = keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.2, patience=10)
 
 cb_list = [lr]
 
-model.fit(train_data, train_lbls, epochs=100, batch_size=32, callbacks=cb_list)
-# save_model(model, 'algoo_v0.0')
+model.fit(train_data, train_lbls, epochs=500, batch_size=700, callbacks=cb_list)
+save_model(model, 'main_v0.3')
 
 dim_x = len(model.get_layer(index=0).get_weights()[0])
 dim_y = len(model.get_layer(index=0).get_weights()[0][0])
@@ -190,7 +190,7 @@ for i in range(layers):
 	with open('{}_w{}.json'.format(file_path, i+1)) as file:
 		weights[i] = ujson.load(file)
 	try:
-		with open('{}_b{}.json'.format(file_path, i+1)) as file:
+	with open('{}_b{}.json'.format(file_path, i+1)) as file:
 			biases[i] = ujson.load(file)
 	except FileNotFoundError: pass
 
