@@ -239,6 +239,9 @@ def getFormattedUnitData(mID):
 
 		data[t] = mapData
 
+	# for i in range(len(data), 101):
+	# 	data[i] = np.zeros(cols)
+
 	return data
 
 def getMatchesData(algo):
@@ -255,6 +258,7 @@ def getMatchesFormatted(algo):
 	allMatches = {}
 
 	for i, ID in enumerate(ids):
+		print ('Formatting Match {}'.format(i))
 		allMatches[(algo, ID)] = getFormattedUnitData(ID)
 
 	return allMatches

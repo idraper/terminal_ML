@@ -1,8 +1,8 @@
 import svr_lib as svr
-import tensorflow as tf
-import numpy as np
+# import tensorflow as tf
+# import numpy as np
 import pandas as pd
-import time
+# import time
 from datetime import datetime
 
 '''
@@ -29,8 +29,11 @@ def updateAllData():
 	print ('Updating at time:\t{}'.format(datetime.now().time()))
 
 	for algo in svr.getLeaderBoardAlgos([1,2,3,4,5]):
+		print (algo)
+		if not algo.startswith('Aelgoo'):
+			continue
 		data = svr.getMatchesFormatted(algo)
-		print (data)
+		# print (data)
 		for match in data:
 			name, ID = match
 
@@ -39,4 +42,5 @@ def updateAllData():
 			df.to_pickle('data/{}_{}.pkl'.format(name, ID))
 		break
 
-# updateAllData()
+updateAllData()
+# print (svr.getMatchesStr('Aelgoo_Order_66'))
