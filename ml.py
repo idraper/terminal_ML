@@ -94,14 +94,14 @@ tb = keras.callbacks.TensorBoard(log_dir='./ML_summaries/', histogram_freq= 0, w
 
 save = keras.callbacks.ModelCheckpoint('model.hdf5', monitor='val_loss', verbose=0, save_best_only=False, save_weights_only=False, mode='auto', period=1)
 
-stop = keras.callbacks.EarlyStopping(monitor='acc', min_delta=0.0001, patience=3)
+stop = keras.callbacks.EarlyStopping(monitor='acc', min_delta=0, patience=50)
 
 lr = keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.2, patience=10)
 
-cb_list = [tb, lr, stop]
+cb_list = [lr]
 
-model.fit(train_data, train_lbls, epochs=200, callbacks=cb_list)
-save_model(model, 'main_v0.1')
+model.fit(train_data, train_lbls, epochs=500, batch_size=700, callbacks=cb_list)
+save_model(model, 'main_v0.3')
 
 dim_x = len(model.get_layer(index=0).get_weights()[0])
 dim_y = len(model.get_layer(index=0).get_weights()[0][0])

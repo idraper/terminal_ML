@@ -45,7 +45,7 @@ def updateAllData():
 while True:
 	try:
 		updateAllData()
-		time.sleep(3600) # 1 hour
+		time.sleep(1800) # 30 min
 	except KeyboardInterrupt:
 		print ('Exiting program')
 		break
