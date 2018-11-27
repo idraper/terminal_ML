@@ -43,7 +43,13 @@ for n, name in enumerate(files):
 
 	data = df.values
 
-	train_data[n] = np.pad(data, pad_width=((0,100-data.shape[0]), (0,0)), mode='constant', constant_values=(0))
+	try:
+		train_data[n] = np.pad(data, pad_width=((0,100-data.shape[0]), (0,0)), mode='constant', constant_values=(0))
+	except ValueError:
+		# match was 100 rounds
+		train_data[n] = np.delete(data, -1, axis=0)
+	except:
+		pass
 
 	# for i in range(len(data) - 1):
 	# 	train_data.append(data[i])
@@ -103,7 +109,7 @@ model = keras.Sequential([
 	keras.layers.Dense(700, activation=tf.nn.sigmoid),
 	# keras.layers.BatchNormalization(),
 	keras.layers.Dense(train_lbls.shape[2], activation=tf.nn.sigmoid),
-	# keras.layers.BatchNormalization(),
+	keras.layers.BatchNormalization(),
 ])
 # indicies = [0,2,4,6]
 indicies = [0,1,2,3]
