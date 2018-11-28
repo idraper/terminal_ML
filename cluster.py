@@ -1,3 +1,4 @@
+from sklearn.cluster import MiniBatchKMeans
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 import pickle as pk
@@ -37,7 +38,7 @@ print (cluster_data.shape)
 
 n = 3
 # Initializing KMeans
-kmeans = KMeans(n_clusters=n)
+kmeans = MiniBatchKMeans(n_clusters=n, verbose=True)
 # Fitting with inputs
 kmeans = kmeans.fit(cluster_data)
 # Predicting the clusters
