@@ -6,6 +6,7 @@ import my_numpy
 import codecs
 import ujson
 import time
+import math
 import sys
 import os
 
@@ -63,7 +64,6 @@ for t in range(labels.shape[0]):
 		if num > 0 and i > 0 and i % num == 0:
 			fill += 3
 			m += '\n{: <{fill}}'.format('', fill=fill)
-			# m += '\n'
 			num -= 1
 		m += ' {} '.format(int(data[i]))
 
@@ -71,4 +71,25 @@ for t in range(labels.shape[0]):
 
 files = [f.close() for f in files]
 
-print (kmeans.get_params())
+
+
+def e_dist(x1, x2):
+	val = 0
+	for a, b in zip(x1,x2):
+		val += (a-b)**2
+	return math.sqrt(val)
+
+def predict(x1, weights):
+	vals = {}
+	for i, w in enumerate(weights):
+		vals[i] = e_dist(x1, w)
+	return min(vals, key=vals.get)
+
+with open('clusters/test.json', 'w') as f:
+	ujson.dump(C, f)
+
+with open('clusters/test.json', 'r') as f:
+	w = ujson.load(f)
+
+for i, lbl in enumerate(labels):
+	print (False) if predict(cluster_data[i], w) != lbl else ''
