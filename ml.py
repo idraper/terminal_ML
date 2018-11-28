@@ -36,14 +36,20 @@ train_data = np.zeros((len(files), 100, 427))
 tmp_lbls = np.zeros((len(files), 100, 427))
 
 for n, name in enumerate(files):
-	# print ('{}\t\t{}'.format(n, name))
+	print ('{}\t\t{}'.format(n, name))
 	
 	with open(path+name, 'rb') as file:
 		df = pk.load(file)
 
 	data = df.values
 
-	train_data[n] = np.pad(data, pad_width=((0,100-data.shape[0]), (0,0)), mode='constant', constant_values=(0))
+	try:
+		train_data[n] = np.pad(data, pad_width=((0,100-data.shape[0]), (0,0)), mode='constant', constant_values=(0))
+	except ValueError:
+		# match was 100 rounds
+		train_data[n] = np.delete(data, -1, axis=0)
+	except:
+		pass
 
 	# for i in range(len(data) - 1):
 	# 	train_data.append(data[i])
@@ -59,12 +65,19 @@ for n, name in enumerate(files):
 # train_data = np.expand_dims(np.array(train_data), axis=1)
 # train_lbls = np.array(train_lbls)
 
+print ()
+print ()
+print ("Finished loading files, rolling data")
 tmp_lbls = np.delete(np.roll(train_data, 1), 0, axis=1)
 train_data = np.delete(train_data, -1, axis=1)
 
 train_lbls = np.zeros((len(files), tmp_lbls.shape[1], 630))
 
+print ()
+print ()
+print ("Finished rolling, starting lbl formatting")
 for i, file in enumerate(tmp_lbls):
+	print ('{}'.format(i))
 	for j, row in enumerate(file):
 		for k, pos in enumerate(row):
 			if k >= 210: break
@@ -86,6 +99,10 @@ for i, file in enumerate(tmp_lbls):
 				train_lbls[i][j][k+1] = 0
 				train_lbls[i][j][k+2] = 1
 
+print ()
+print ()
+print ("Finished lbl formatting, starting training")
+
 # train_data = normalize(train_data)
 # train_lbls = normalize(train_lbls)
 
@@ -103,14 +120,13 @@ model = keras.Sequential([
 	keras.layers.Dense(700, activation=tf.nn.sigmoid),
 	# keras.layers.BatchNormalization(),
 	keras.layers.Dense(train_lbls.shape[2], activation=tf.nn.sigmoid),
-	# keras.layers.BatchNormalization(),
+	keras.layers.BatchNormalization(),
 ])
 # indicies = [0,2,4,6]
 indicies = [0,1,2,3]
 
-from keras.utils.layer_utils import print_summary
-print_summary(model)
-
+# from keras.utils.layer_utils import print_summary
+# print_summary(model)
 
 # RMSprop lr=.001
 # Adadelta lr=2
@@ -131,8 +147,8 @@ lr = keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.2, patience=10)
 
 cb_list = [lr]
 
-model.fit(train_data, train_lbls, epochs=500, batch_size=700, callbacks=cb_list)
-save_model(model, 'main_v0.3')
+model.fit(train_data, train_lbls, epochs=10, batch_size=200, callbacks=cb_list)
+save_model(model, 'main_v1.0')
 
 dim_x = len(model.get_layer(index=0).get_weights()[0])
 dim_y = len(model.get_layer(index=0).get_weights()[0][0])
@@ -184,7 +200,7 @@ for i in range(layers):
 	with open('{}_w{}.json'.format(file_path, i+1)) as file:
 		weights[i] = ujson.load(file)
 	try:
-	with open('{}_b{}.json'.format(file_path, i+1)) as file:
+		with open('{}_b{}.json'.format(file_path, i+1)) as file:
 			biases[i] = ujson.load(file)
 	except FileNotFoundError: pass
 
